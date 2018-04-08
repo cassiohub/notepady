@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title><%= note.name %> | Notepady</title>
+</head>
+<style>
+	html, body {
+			padding: 0;
+			margin: 0;
+			box-sizing: border-box;
+	}
+
+	body {
+			display: flex;
+	}
+
+	#note-body {
+			width: calc(100% - 25px);
+			height: calc(100vh - 25px);
+			appearance: none;
+			-webkit-appearance: none;
+			-moz-appearance: none;
+			-o-appearance: none;
+			border: 0 none;
+			font-family: Arial, Helvetica, Tahoma, Verdana;
+			font-size: 16px;
+			color: #111111;
+			padding: 10px;
+			resize: none;
+			overflow: auto;
+	}
+</style>
+
+<body>
+	<form>
+		<input type="hidden" name="name" value="<%= note.name %>" />
+		<textarea cols="1000" rows="1000" id="note-body" name="body" onkeyup="setChange()">
+			<%= note.body %>
+		</textarea>
+	</form>
+
+	<script>
+		let changed = false;
+
+		function setChange() {
+			changed = true;
+		}
+
+		function getFormData() {
+			const { elements } = document.forms[0];
+			const name = elements.name.value;
+			const body = elements.body.value;
+
+			return { name, body };
+		}
+
+		function save() {
+			if (changed) {
+				changed = false;
+				const { name, body } = getFormData();
+				return fetch(`/${name}`, {
+						method: 'POST',
+						body: JSON.stringify({ name, body }),
+						headers: new Headers({ 'Content-Type': 'application/json' }),
+					})
+					.then(response => response.json())
+					.catch(err => console.error(err));
+			}
+		}
+
+		function update() {
+			const { name, body } = getFormData();
+			return fetch(`/${name}?format=json`)
+				.then(response => response.json())
+				.then(note => set(note))
+				.catch(err => console.error(err));
+		}
+
+		function saveOrUpdate(changed) {
+			return changed ? save() : update();
+		}
+
+		function set({ body }) {
+			document.forms[0].elements.body.value = body;
+		}
+
+		window.onload = () => {
+			document.querySelector("#note-body").focus();
+			setInterval(() => { saveOrUpdate(changed) }, 2000);
+		}
+
+		window.onbeforeunload = save();
+	</script>
+</body>
+</html>

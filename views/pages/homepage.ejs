@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Notepady</title>
+
+  <style>
+    html, body {
+			padding: 0;
+			margin: 0;
+			box-sizing: border-box;
+      font-family: Arial, Helvetica, Tahoma, Verdana;
+      text-align: center;
+  	}
+    p { font-size: 20px; }
+  </style>
+</head>
+<body>
+  <h1>Notepady</h1>
+  <form onsubmit="return go()">
+    <p>
+      www.notepady.herokuapp.com/
+      <input type="text" name="name" id="note-name" />
+      <input type="submit" value="Go!">
+    </p>
+  </form>
+
+  <script>
+    function go() {
+      const name = document.forms[0].elements.name.value;
+	    window.location.href = window.location.href + name;
+	    return false;
+    }
+
+    (function (){
+      document.querySelector("#note-name").focus();
+    })();
+  </script>
+</body>
+</html>
